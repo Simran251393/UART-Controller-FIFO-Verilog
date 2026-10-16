@@ -22,5 +22,4 @@ Verified using Icarus Verilog on EDA Playground:
 Verilog HDL · Icarus Verilog · EDA Playground · EPWave
 
 ### Simulation Waveform
-
-![UART Simulation](Screenshot 2026-10-16 at 8.33.59 PM.png)
+![UART Simulation Waveform](screenshots/Screenshot%202026-10-16%20at%208.33.59%20PM.png)
