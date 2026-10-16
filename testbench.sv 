@@ -1,0 +1,78 @@
+
+module tb_uart;
+
+    reg clk = 0;
+    reg rst = 1;
+    reg rx = 1;
+    reg rd_en = 0;
+    reg [7:0] test_data = 8'hA5;
+    reg frame_error_seen = 0;
+
+    wire [7:0] data_out;
+    wire fifo_full;
+    wire fifo_empty;
+    wire frame_error;
+
+    integer i;
+
+    uart_fifo_system #(
+        .CLKS_PER_BIT(4),
+        .FIFO_DEPTH(4)
+    ) dut (
+        .clk(clk),
+        .rst(rst),
+        .rx(rx),
+        .rd_en(rd_en),
+        .data_out(data_out),
+        .fifo_full(fifo_full),
+        .fifo_empty(fifo_empty),
+        .frame_error(frame_error)
+    );
+
+    always #5 clk = ~clk;
+
+    // Remember the error even after its pulse disappears
+    always @(posedge clk) begin
+        if (rst)
+            frame_error_seen <= 0;
+        else if (frame_error)
+            frame_error_seen <= 1;
+    end
+
+    initial begin
+        $dumpfile("uart.vcd");
+        $dumpvars(0, tb_uart);
+
+        repeat (3) @(negedge clk);
+        rst = 0;
+        repeat (2) @(negedge clk);
+
+        // Start bit
+        rx = 0;
+        repeat (4) @(negedge clk);
+
+        // Send A5, least-significant bit first
+        for (i = 0; i < 8; i = i + 1) begin
+            rx = test_data[i];
+            repeat (4) @(negedge clk);
+        end
+
+        // Invalid stop bit
+        rx = 0;
+        repeat (6) @(negedge clk);
+
+        if (frame_error_seen)
+            $display("PASS: UART framing error detected.");
+        else
+            $display("FAIL: UART framing error not detected.");
+
+        $finish;
+    end
+
+    initial begin
+        #2000;
+        $fatal(1, "ERROR: Simulation timeout.");
+    end
+
+endmodule
+
