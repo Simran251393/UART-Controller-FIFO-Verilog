@@ -23,4 +23,4 @@ Verilog HDL · Icarus Verilog · EDA Playground · EPWave
 
 ### Simulation Waveform
 
-![UART Simulation](screenshots/uart-waveform.png)
+![UART Simulation](Screenshot 2026-10-16 at 8.33.59 PM.png)
